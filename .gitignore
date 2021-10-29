@@ -1,5 +1,5 @@
 .idea
 node_modules
-
+lerna-debug.log
 packages/**/node_modules
 packages/**/packages-lock.json
