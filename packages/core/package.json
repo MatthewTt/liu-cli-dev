@@ -1,6 +1,6 @@
 {
   "name": "@liu-cli-dev/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "core",
   "author": "matt <1176020631@qq.com>",
   "homepage": "",
@@ -17,6 +17,6 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@liu-cli-dev/utils": "^1.0.0"
+    "@liu-cli-dev/utils": "^1.0.1"
   }
 }
