@@ -1,0 +1,22 @@
+{
+  "name": "@liu-cli-dev/core",
+  "version": "1.0.0",
+  "description": "core",
+  "author": "matt <1176020631@qq.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/core.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "@liu-cli-dev/utils": "^1.0.0"
+  }
+}
