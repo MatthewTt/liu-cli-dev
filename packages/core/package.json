@@ -20,7 +20,7 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@liu-cli-dev/utils": "^1.0.1"
+    "@liu-cli-dev/utils": "^1.0.2"
   },
   "gitHead": "486bedc0db285f98c2498cebd70b8177f7eacda2"
 }
