@@ -22,5 +22,8 @@
   "dependencies": {
     "@liu-cli-dev/utils": "^1.0.5"
   },
-  "gitHead": "239df95d478ac007bd030f396558d5a92c77c51b"
+  "gitHead": "38196bbf2ab48a4901557b4d41fc23225c5c326d",
+  "publishConfig": {
+    "access": "public"
+  }
 }
