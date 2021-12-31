@@ -27,6 +27,8 @@
     "url": "https://github.com/MatthewTt/liu-cli-dev/issues"
   },
   "dependencies": {
-    "@liu-cli-dev/command": "file:../../models/command"
+    "@liu-cli-dev/command": "file:../../models/command",
+    "@liu-cli-dev/log": "file:../../utils/log",
+    "semver": "^7.3.5"
   }
 }

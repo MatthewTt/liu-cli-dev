@@ -22,9 +22,9 @@ async function core() {
     registerCommand()
     // checkRoot()
   } catch (e) {
-    log.error(e.message)
+    // log.error(e.message)
     if (program.opts().debug) {
-      console.log(e)
+      log.error(e.message)
     }
   }
 }
@@ -45,6 +45,7 @@ function checkUserHome() {
   }
 }
 
+/*
 function checkNodeVersion() {
   // 获取当前版本
   const currentVersion = process.version
@@ -54,6 +55,7 @@ function checkNodeVersion() {
     throw new Error(colors.red(`需要至少安装${ lowestNodeVersion }版本的Node.js`))
   }
 }
+*/
 
 function checkPkgVersion() {
   log.info('cli', pkg.version)
@@ -123,7 +125,7 @@ async function checkGlobalVersion() {
 // 检查环境集合
 async function prepare() {
   checkPkgVersion()
-  checkNodeVersion()
+  // checkNodeVersion()
   checkUserHome()
   // checkInputArgs()
   checkEnv()
@@ -141,7 +143,7 @@ function registerCommand() {
   program
     .command('init [projectName]')
     .option('-f, --force', '是否强制初始化项目')
-    .action(init.init)
+    .action(exec)
   // 监听是否开启debug
   program.on('option:debug', function () {
     if (this.opts().debug) {
@@ -155,7 +157,6 @@ function registerCommand() {
 
   // 指定targetPath
   program.on('option:targetPath', function () {
-    console.log('tp', this.opts().targetPath)
     process.env.CLI_TARGET_PATH = this.opts().targetPath
   })
 
