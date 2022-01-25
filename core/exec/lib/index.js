@@ -16,8 +16,7 @@ async function index() {
   const cmdName = cmdObj.name()
   const packageName = SETTINGS[cmdName] // 获取输入啥命令
   const packageVersion = 'latest'
-  let pkg = ''
-
+  let pkg
   if (!targetPath) { // 如果没有在命令行输入targetPath, 会默认一个
     targetPath = path.resolve(homePath, CACHE_DIR)
     storeDir = path.resolve(targetPath, 'node_modules')
@@ -76,6 +75,8 @@ async function index() {
     } catch (e) {
       log.error('exec', e.message)
     }
+  } else {
+    log.error('没有找到js文件，无法继续执行代码。')
   }
 }
 

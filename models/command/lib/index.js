@@ -6,15 +6,18 @@ const LOWEST_NODE_VERSION = '12.0.0'
 
 class Command {
   constructor(argv) {
+    // console.log(argv,'argv')
+    if (!argv) {
+      throw new Error('参数不能为空')
+    }
     if (!Array.isArray(argv)) {
       throw new Error('参数必须是数组')
     }
     if (argv.length < 1) {
       throw new Error('参数列表为空')
     }
-    console.log(argv)
     this._argv = argv
-    let runner = new Promise(((resolve, reject) => {
+    new Promise((() => {
       let chain = Promise.resolve()
       chain = chain.then(() => this.checkNodeVersion())
       chain = chain.then(() => this.initArgs())
@@ -24,8 +27,8 @@ class Command {
     }))
   }
   initArgs() {
-    this._cmd = this._argv[this._argv.length - 1]
     this._argv = this._argv.slice(0, this._argv.length - 1)
+    this._cmd = this._argv[this._argv.length - 1]
   }
   init() {
     throw new Error('init必须实现')

@@ -9,12 +9,21 @@ const userHome = require('user-home')
 
 const pkg = require('../package.json')
 let log = require('@liu-cli-dev/log')
-const init = require('@liu-cli-dev/init')
+// const init = require('@liu-cli-dev/init')
 const exec = require('@liu-cli-dev/exec')
 const constant = require('./constant')
 const commander = require('commander')
 const program = new commander.Command()
-let args, config
+let  config
+
+/**
+ * 检查root账户
+ */
+/*function checkRoot() {
+  // console.log(process.getuid())
+  const checkRoot = require('root-check')
+  checkRoot()
+}*/
 
 async function core() {
   try {
@@ -27,15 +36,6 @@ async function core() {
       log.error(e.message)
     }
   }
-}
-
-/**
- * 检查root账户
- */
-function checkRoot() {
-  // console.log(process.getuid())
-  const checkRoot = require('root-check')
-  checkRoot()
 }
 
 // 检查用户主目录, path-exists不支持require导入
@@ -62,20 +62,20 @@ function checkPkgVersion() {
 }
 
 // 校验debug入参
-function checkInputArgs() {
+/*function checkInputArgs() {
   const minimist = require('minimist')
   args = minimist(process.argv.slice(2))
   checkArgs()
-}
+}*/
 
-function checkArgs() {
+/*function checkArgs() {
   if (args.debug) {
     process.env.Log_LEVEL = 'verbose'
   } else {
     process.env.LOG_LEVEL = 'info'
   }
   log.level = process.env.LOG_LEVEL
-}
+}*/
 
 // 检查环境变量
 function checkEnv() {
@@ -87,7 +87,7 @@ function checkEnv() {
         path: dPath
       })
     } else {
-      console.log(err)
+      // console.log(err)
     }
     createDefaultConfig()
     // log.verbose('环境变量', config)
