@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require("fs");
-
 function isObject(o) {
     return Object.prototype.toString.call(o) === '[object Object]'
 }
@@ -48,5 +47,18 @@ function clearDirSync(path) {
         return fs.mkdirSync(path)
     }
 }
-module.exports = {isObject, clearDirSync};
+
+function loading(msg = 'loading') {
+    const cliSpinners = require('cli-spinners');
+    const ora = require('ora');
+    return ora({
+        spinner: cliSpinners.random,
+        text: msg
+    }).start()
+}
+
+function sleep(timeout = 1000) {
+    return new Promise(resolve => setTimeout(resolve, timeout))
+}
+module.exports = {isObject, clearDirSync, loading, sleep};
 
