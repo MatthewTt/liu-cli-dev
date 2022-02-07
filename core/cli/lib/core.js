@@ -83,7 +83,6 @@ function checkEnv() {
     const dotenv = require('dotenv')
     const dPath = path.resolve(userHome, '.env')
 
-    console.log(dPath, 'dPath')
     if (fs.existsSync(dPath)) {
         config = dotenv.config({
             path: dPath

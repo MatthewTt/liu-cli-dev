@@ -6,12 +6,19 @@ const utils = require('@liu-cli-dev/utils')
 const Package = require('@liu-cli-dev/package')
 const getTemplate = require('./getTemplate')
 const fs = require('fs')
+const fse = require('fs-extra')
 const inquirer = require('inquirer')
 const path = require('path');
 const userHome = require('user-home');
+const ejs = require('ejs')
 const PROJECT_TYPE = 'project'
 const COMPONENT_TYPE = 'component'
 
+
+const TEMPLATE_TYPE_NORMAL = 'normal'
+const TEMPLATE_TYPE_CUSTOM = 'custom'
+
+const WHITE_LIST = ['pnpm', 'npm', 'cnpm'] // 命令白名单
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
@@ -22,21 +29,23 @@ class InitCommand extends Command {
     }
 
     async exec() {
-        // 1准备阶段
+        // 1.准备阶段
         try {
             const projectInfo = await this.prepare();
             if (projectInfo) {
-                // 2下载模板
+                // 2.下载模板
                 log.verbose(projectInfo)
                 this.projectInfo = projectInfo
-                this.downloadTemplate()
+                await this.downloadTemplate()
+
+                // 3.安装模板
+                this.installTemplate()
             }
 
 
         } catch (e) {
             log.error(e.message)
         }
-        // 3安装模板
     }
 
 
@@ -44,7 +53,6 @@ class InitCommand extends Command {
         const localPath = process.cwd() // 查看执行的路径
         // 0. 判断是否存在模版
         const template = await getTemplate();
-        console.log(template)
         if (!template || template.length < 1) {
             throw new Error('模板不存在')
         }
@@ -150,6 +158,17 @@ class InitCommand extends Command {
         } else if (type === COMPONENT_TYPE) {
 
         }
+
+        // 生成className
+        if (project.projectName) {
+            project.className = require('kebab-case')(project.projectName).replace(/^-/, '') // 转换成小写
+        }
+        console.log(project)
+        if (project.projectVersion) {
+            project.version = project.projectVersion
+        }
+
+        this.selectProject = project
         // 3.返回信息
         return {type, ...project}
 
@@ -162,6 +181,10 @@ class InitCommand extends Command {
         }))
     }
 
+    /**
+     * 下载模板
+     * @returns {Promise<void>}
+     */
     async downloadTemplate() {
         // 1. 通过项目模板API获取项目模板信息
         // 2. 通过egg.js搭建后端
@@ -177,6 +200,8 @@ class InitCommand extends Command {
             packageName: projectTemplate.npmName,
             packageVersion: projectTemplate.version
         })
+        this.templateInfo = projectTemplate
+        this.templateNpm = templateNpm
         if (!await templateNpm.exists()) {
             const ora = utils.loading('正在下载...');
             try {
@@ -195,6 +220,113 @@ class InitCommand extends Command {
             }
         }
     }
+    installTemplate() {
+        if (this.templateInfo) {
+            if (!this.templateInfo.type) {
+                this.templateInfo.type = TEMPLATE_TYPE_NORMAL
+            }
+            if (this.templateInfo.type === TEMPLATE_TYPE_NORMAL) {
+                // 标准安装
+                this.installNormalTemplate()
+            } else if (this.templateInfo.type === TEMPLATE_TYPE_CUSTOM) {
+                // 自定义安装
+                this.installCustomTemplate()
+            } else {
+                throw new Error('无法识别模板类型')
+            }
+        } else {
+            throw new Error('模板类型不存在')
+        }
+    }
+
+    async installNormalTemplate() {
+        const ora = utils.loading('正在安装模板...')
+        try {
+            const templatePath = path.resolve(this.templateNpm.cacheFilePath, 'template')
+            const currentPath = process.cwd()
+            fse.ensureDirSync(templatePath)
+            fse.ensureDirSync(currentPath)
+            fse.copySync(templatePath, currentPath, {})
+        } catch (e) {
+            throw e
+        } finally {
+            ora.stop()
+            log.success('模板安装完成')
+        }
+        const files = await this.ejsRender({ ignore: ['node_modules/*', 'public/**'] })
+        console.log('file', files)
+        // 依赖安装
+        const {installCommand, startCommand} = this.templateInfo;
+        await this.execCommand(installCommand, '依赖安装失败')
+        // 运行项目
+        await this.execCommand(startCommand, '项目运行失败')
+    }
+    installCustomTemplate() {}
+
+    // 校验命令是否白名单中
+    commandIsVerb(command) {
+        if (WHITE_LIST.indexOf(command) > -1) {
+            return command
+        }
+
+        return null
+    }
+
+    async execCommand(command, errMsg) {
+        let result
+        if (command) {
+            const execCmd = command.split(' ')
+            const cmd = this.commandIsVerb(execCmd[0])
+            if (!cmd) {
+                throw new Error(`（${command}）命令不存在`)
+            }
+            const args = execCmd.slice(1)
+            result = await utils.execSync(cmd, args, {
+                cwd: process.cwd(),
+                stdio: 'inherit'
+            })
+        }
+        if (result !== 0) {
+            throw new Error(errMsg)
+        }
+    }
+
+    /**
+     * ejs 渲染模板
+     * @param options
+     * @returns {Promise<unknown>}
+     */
+    ejsRender(options) {
+        const cwd = process.cwd()
+        const templateInfo = this.selectProject;
+        return new Promise(((resolve, reject) => {
+            require('glob')('**', {
+                cwd,
+                nodir: true,
+                ignore: options.ignore || ''
+            }, (err, files) => {
+                if (err) {
+                    reject(err)
+                }
+                Promise.all(files.map(file => {
+                    const filePath = path.resolve(cwd, file)
+                    return new Promise(((resolve1, reject1) => {
+                        ejs.renderFile(filePath, templateInfo, {}, (err, result) => {
+                            if (err) {
+                                reject1(err)
+                            } else {
+                                // result只是数据，并不会替换原有文件，所以要覆盖数据
+                                fs.writeFileSync(filePath, result)
+                                resolve1(result)
+                            }
+                        })
+                    }))
+                })).then((result) => resolve(result))
+                    .catch(err => reject(err))
+            })
+        }))
+    }
+
 }
 
 function init(argv) {

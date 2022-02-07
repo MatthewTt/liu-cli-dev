@@ -29,11 +29,14 @@
   "dependencies": {
     "@liu-cli-dev/command": "file:../../models/command",
     "@liu-cli-dev/log": "file:../../utils/log",
+    "@liu-cli-dev/package": "file:../../models/package",
     "@liu-cli-dev/request": "file:../../utils/request",
     "@liu-cli-dev/utils": "file:../../utils/utils",
-    "@liu-cli-dev/package": "file:../../models/package",
+    "ejs": "^3.1.6",
     "fs-extra": "^10.0.0",
+    "glob": "^7.2.0",
     "inquirer": "^8.2.0",
+    "kebab-case": "^1.0.1",
     "semver": "^7.3.5",
     "user-home": "^3.0.0"
   }
