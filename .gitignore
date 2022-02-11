@@ -3,3 +3,4 @@ node_modules
 lerna-debug.index
 packages/**/node_modules
 lerna-debug.log
+.vscode
