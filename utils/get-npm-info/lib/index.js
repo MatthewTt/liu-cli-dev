@@ -13,7 +13,6 @@ function getNpmInfo(npmName, url) {
   const npmInfoUrl = urlJoin(registerUrl, npmName)
   return axios.get(npmInfoUrl).then(response => {
     if (response.status === 200) {
-      // console.log(response.data)
       return response.data
     }
     return null
@@ -58,11 +57,17 @@ async function getNpmSemverVersion(baseVersion, npmName) {
 }
 
 async function getNpmLatestVersion(packageName) {
-  const versions = await getVersions(packageName)
-  if (versions) {
-    return versions.sort((a, b) => semver.gt(b, a))[0]
-  }
-  return null
+  const info = await getNpmInfo(packageName);
+  return info['dist-tags'].latest
+  // const versions = await getVersions(packageName)
+
+  // if (versions) {
+  //
+  //   const string = versions.sort((a, b) => semver.gt(b, a))
+  //   console.log(string)
+  //   return string
+  // }
+  // return null
 }
 
 module.exports = {

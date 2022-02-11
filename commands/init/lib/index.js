@@ -124,53 +124,57 @@ class InitCommand extends Command {
             }]
         });
         log.verbose('type: init/index.js 97', type)
+        this.template = this.template.filter(tmp => tmp.tag.includes(type))
         // 2.获取项目基本信息
         let project
-        if (type === PROJECT_TYPE) {
-            project = await inquirer.prompt([
-                {
-                    type: 'input',
-                    name: 'projectName',
-                    message: '请输入项目名称',
-                    default: '',
-                    validate: function (v) {
-                        return typeof v === 'string'
-                    },
-                    filter: function (v) {
-                        return v
-                    }
+        const title = type === PROJECT_TYPE ? '项目' : '组件'
+        const promptList = [{
+            type: 'input',
+            name: 'projectVersion',
+            message: `请输入${title}版本`,
+            default: '1.0.0',
+            validate: v => typeof v === 'string',
+            filter: v => v
+        },
+            {
+                type: 'list',
+                name: 'projectTemplate',
+                message: `请选择${title}模板`,
+                choices: this.createTemplateChoices()
+            }]
+        if (!this.projectName) {
+            promptList.unshift({
+                type: 'input',
+                name: 'projectName',
+                message: `请输入${title}名称`,
+                default: '',
+                validate: function (v) {
+                    return typeof v === 'string'
                 },
-                {
-                    type: 'input',
-                    name: 'projectVersion',
-                    message: '请输入项目版本',
-                    default: '1.0.0',
-                    validate: v => typeof v === 'string',
-                    filter: v => v
-                },
-                {
-                    type: 'list',
-                    name: 'projectTemplate',
-                    message: '请选择项目模板',
-                    choices: this.createTemplateChoices()
+                filter: function (v) {
+                    return v
                 }
-            ])
+            })
+        }
+        if (type === PROJECT_TYPE) {
+
+            project = await inquirer.prompt(promptList)
         } else if (type === COMPONENT_TYPE) {
+            project = await inquirer.prompt(promptList)
 
         }
 
         // 生成className
-        if (project.projectName) {
-            project.className = require('kebab-case')(project.projectName).replace(/^-/, '') // 转换成小写
+        if (project.projectName || this.projectName) {
+            project.className = require('kebab-case')(project.projectName || this.projectName).replace(/^-/, '') // 转换成小写
         }
-        console.log(project)
         if (project.projectVersion) {
             project.version = project.projectVersion
         }
 
-        this.selectProject = project
+        // this.selectProject = project
         // 3.返回信息
-        return {type, ...project}
+        return {projectName: this.projectName, type, ...project}
 
     }
 
@@ -202,6 +206,7 @@ class InitCommand extends Command {
         })
         this.templateInfo = projectTemplate
         this.templateNpm = templateNpm
+        log.verbose('package', templateNpm)
         if (!await templateNpm.exists()) {
             const ora = utils.loading('正在下载...');
             try {
@@ -220,6 +225,7 @@ class InitCommand extends Command {
             }
         }
     }
+
     installTemplate() {
         if (this.templateInfo) {
             if (!this.templateInfo.type) {
@@ -253,15 +259,16 @@ class InitCommand extends Command {
             ora.stop()
             log.success('模板安装完成')
         }
-        const files = await this.ejsRender({ ignore: ['node_modules/*', 'public/**'] })
-        console.log('file', files)
+        const files = await this.ejsRender({ignore: ['node_modules/*', 'public/**', ...(this.templateInfo.ignore || [])]})
         // 依赖安装
         const {installCommand, startCommand} = this.templateInfo;
         await this.execCommand(installCommand, '依赖安装失败')
         // 运行项目
         await this.execCommand(startCommand, '项目运行失败')
     }
-    installCustomTemplate() {}
+
+    installCustomTemplate() {
+    }
 
     // 校验命令是否白名单中
     commandIsVerb(command) {
@@ -298,7 +305,7 @@ class InitCommand extends Command {
      */
     ejsRender(options) {
         const cwd = process.cwd()
-        const templateInfo = this.selectProject;
+        const templateInfo = this.projectInfo;
         return new Promise(((resolve, reject) => {
             require('glob')('**', {
                 cwd,
@@ -330,7 +337,6 @@ class InitCommand extends Command {
 }
 
 function init(argv) {
-    // console.log('init', projectName, cmdObj.force)
     return new InitCommand(argv)
 }
 
