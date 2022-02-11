@@ -19,6 +19,7 @@ const TEMPLATE_TYPE_NORMAL = 'normal'
 const TEMPLATE_TYPE_CUSTOM = 'custom'
 
 const WHITE_LIST = ['pnpm', 'npm', 'cnpm'] // 命令白名单
+console.log('test')
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
