@@ -1,6 +1,6 @@
 {
   "name": "@liu-cli-dev/core",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "core",
   "author": "matt <1176020631@qq.com>",
   "homepage": "",
@@ -20,11 +20,11 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
+    "@liu-cli-dev/exec": "file:../exec",
     "@liu-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
+    "@liu-cli-dev/init": "file:../../commands/init",
     "@liu-cli-dev/log": "file:../../utils/log",
     "@liu-cli-dev/utils": "file:../../utils/utils",
-    "@liu-cli-dev/exec": "file:../exec",
-    "@liu-cli-dev/init": "file:../../commands/init",
     "colors": "^1.4.0",
     "commander": "^8.3.0",
     "dotenv": "^10.0.0",
