@@ -4,8 +4,8 @@ const log = require('@liu-cli-dev/log')
 const path = require('path')
 const cp = require('child_process')
 const SETTINGS = {
-  // init: '@imooc-cli/init'
-  init: '@liu-cli-dev/init'
+  init: '@imooc-cli/init'
+  // init: '@liu-cli-dev/init'
 }
 
 const CACHE_DIR = 'dependencies' // 缓存目录
