@@ -1,6 +1,4 @@
 62 error Error: Command failed with exit code 128: git push --follow-tags --no-verify --atomic origin master
-62 error remote: Support for password authentication was removed on August 13, 2021. Please use a personal access token instead.
-62 error remote: Please see https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/ for more information.
-62 error fatal: Authentication failed for 'https://github.com/MatthewTt/liu-cli-dev.git/'
+62 error fatal: unable to access 'https://github.com/MatthewTt/liu-cli-dev.git/': LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443
 62 error     at makeError (/Users/jiajieliu/Codes/liu-cli-dev/node_modules/.pnpm/execa@5.1.1/node_modules/execa/lib/error.js:60:11)
 62 error     at handlePromise (/Users/jiajieliu/Codes/liu-cli-dev/node_modules/.pnpm/execa@5.1.1/node_modules/execa/index.js:118:26)
