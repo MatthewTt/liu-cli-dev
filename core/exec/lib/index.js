@@ -8,7 +8,7 @@ const SETTINGS = {
   init: '@liu-cli-dev/init'
 }
 
-const CACHE_DIR = 'dependencies' // 缓存目录
+const CACHE_DIR = 'dependencies' // 缓存目录 d
 async function index() {
   let targetPath = process.env.CLI_TARGET_PATH // 根据命令行输入的命令 --targetPath 来获取的
   const homePath = process.env.CLI_HOME_PATH
