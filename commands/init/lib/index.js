@@ -18,7 +18,7 @@ const COMPONENT_TYPE = 'component'
 const TEMPLATE_TYPE_NORMAL = 'normal'
 const TEMPLATE_TYPE_CUSTOM = 'custom'
 
-const WHITE_LIST = ['pnpm', 'npm', 'cnpm'] // 命令白名单
+const WHITE_LIST = ['pnpm', 'npm', 'cnpm'] // 命令白名单a
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
